@@ -17,7 +17,7 @@ model User {
   phone String @unique
   vpoLastFour String
   fullName String
-  birthday DateTime
+  birthday String
   passportRegistration DocumentsData
   vpoRegistration DocumentsData
   familyStatus FamilyStatus

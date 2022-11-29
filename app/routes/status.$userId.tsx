@@ -9,7 +9,6 @@ export const loader: LoaderFunction = async ({
   params,
 }) => {
   const { userId } = params;
-  console.log('userId', userId);
   const user = await findUserById(userId as string);
 
   if (!user) throw new Error("User not found");

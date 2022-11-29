@@ -1,4 +1,5 @@
 import { Form } from "@remix-run/react";
+import { phone } from 'phone';
 import { redirect, json, type ActionFunction } from "@remix-run/node";
 import type { RegisterFormData } from '../types/RegisterForm';
 import { createUser } from '../utils/user.server';
@@ -6,8 +7,9 @@ import Layout from "~/components/Layout";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = Object.fromEntries(await request.formData()) as unknown as RegisterFormData;
+  const { phoneNumber } = phone(formData.phone as string, { country: 'UA' });
   // @TODO: add validate to formData fields
-  const user = await createUser(formData);
+  const user = await createUser({ ...formData, phone: phoneNumber as string });
 
   if (!user) {
     return json(
