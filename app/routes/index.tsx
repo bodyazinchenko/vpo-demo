@@ -1,16 +1,14 @@
 import { Form } from "@remix-run/react";
-import { redirect } from "@remix-run/node";
-import usersMock from '../../mocks/usersMock';
+import { type ActionFunction, redirect } from "@remix-run/node";
+import { findUserByPhoneAndVpo } from '../utils/user.server';
+import Layout from "~/components/Layout";
 
-// Add validate 
-export const validate = () => true; 
-
-export const action = async ({ request }) => {
+export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const phoneNumber = form.get('phoneNumber');
-  const vpoNumber = form.get('vpoNumber');
+  const phoneNumber = form.get('phoneNumber') as string;
+  const vpoNumber = form.get('vpoNumber') as string;
 
-  const user = usersMock.find(item => item.phoneNumber === phoneNumber && item.vpoNumber === vpoNumber);
+  const user = await findUserByPhoneAndVpo(phoneNumber, vpoNumber);
 
   if (!user) {
     return redirect('/register')
@@ -21,7 +19,7 @@ export const action = async ({ request }) => {
 
 export default function Index() {
   return (
-    <div className="container">
+    <Layout>
       <Form method="post">
         <div className="mb-3">
           <label htmlFor="phoneNumber" className="form-label">Контактний номер телефону</label>
@@ -33,6 +31,6 @@ export default function Index() {
         </div>
         <button type="submit" className="btn btn-primary">Перевірити заявку</button>
       </Form>
-    </div>
+    </Layout>
   );
 }
