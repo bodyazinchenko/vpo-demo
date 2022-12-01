@@ -1,10 +1,10 @@
+import { Link } from "react-router-dom";
+
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <header>
-        <div className="container">
-          <h1>Отримання допомоги для впо</h1>
-        </div>
+        <Link to="/">На головну</Link>
       </header>
       <div className="container content">
         {children}

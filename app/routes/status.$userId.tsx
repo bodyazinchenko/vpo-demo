@@ -1,7 +1,7 @@
 import { type User, ApplicationStatus } from "@prisma/client";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
 import Layout from "~/components/Layout";
 import { findUserById } from '../utils/user.server';
 
@@ -9,14 +9,30 @@ export const loader: LoaderFunction = async ({
   params,
 }) => {
   const { userId } = params;
-  const user = await findUserById(userId as string);
 
-  if (!user) throw new Error("User not found");
-  return json({ user });
-};
+  try {
+    const user = await findUserById(userId as string);
+    return user ? json({ user }) : json({ userNotFound: true });
+  } catch (err) {
+    return json({ userNotFound: true })
+  }
+}
 
 export default function CheckStatus() {
-  const { user } = useLoaderData<{ user: User }>();
+  const { user, userNotFound } = useLoaderData<{ user: User, userNotFound: boolean }>();
+
+  if (userNotFound) {
+    return (
+      <Layout>
+        <h3>Ми не змогли знайти данні по вашій заявці. Будь ласка, перевірте заявку ще раз</h3>
+
+        <Link to="/check-status">
+          <button type="button" className="btn btn-outline-secondary btn-lg px-4 gap-3">Перевірити статус заявки</button>
+        </Link>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <h2>{user.fullName}</h2>

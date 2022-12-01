@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, useTransition } from "@remix-run/react";
 import { unstable_parseMultipartFormData } from "@remix-run/node";
 import { phone } from 'phone';
 import { redirect, json, type ActionFunction, } from "@remix-run/node";
@@ -31,10 +31,10 @@ export const action: ActionFunction = async ({ request }) => {
 }
 
 export default function Register() {
+  const transition = useTransition();
+
   return (
     <Layout>
-      Вашої заявки не було знайдено, тому ви можете подати нову:
-
       <Form method="post" encType="multipart/form-data">
         <div className="mb-3">
           <label htmlFor="phone" className="form-label">Контактний номер телефону</label>
@@ -110,7 +110,16 @@ export default function Register() {
           <label htmlFor="img" className="form-label">Загрузіть фото довідки ВПО</label>
           <input type="file" accept="image/png, image/jpeg" name="img" className="form-control" id="img" required />
         </div>
-        <button type="submit" className="btn btn-primary">Подати заявку</button>
+          <button type="submit" className="btn btn-primary">
+            {transition.state === 'submitting' ? (
+              <>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                Завантажуємо...
+              </>
+            ) : (
+              <>Подати заявку</>
+            )}
+          </button>
       </Form>
     </Layout>
   );

@@ -1,62 +1,20 @@
-import { Form, useActionData } from "@remix-run/react";
-import { phone } from 'phone'
-import { type ActionFunction, redirect, json } from "@remix-run/node";
-import { findUserByPhoneAndVpo } from '../utils/user.server';
-import Layout from "~/components/Layout";
-import FormCheckStatusSchema from '../schemas/FormCheckStatusSchema';
-import getValidationErrors from "~/schemas/getValidationErrors";
-import type { CheckStatusForm } from "~/types/CheckStatusForm";
-
-type ActionData = {
-  err?: any;
-  formData?: CheckStatusForm;
-}
-
-export const action: ActionFunction = async ({ request }) => {
-  const formData = Object.fromEntries(await request.formData()) as unknown as CheckStatusForm;
-  const { phoneNumber } = phone(formData.phoneNumber as string, { country: 'UA' });
-
-  try {
-    // First validate form inputs
-    await FormCheckStatusSchema.validate(formData, { abortEarly: false });
-    const user = await findUserByPhoneAndVpo(phoneNumber as string, formData.vpoLastFour);
-    if (!user) {
-      return redirect('/register')
-    } else {
-      return redirect(`/status/${user.id}`);
-    }
-  } catch (err) {
-    return json({ err, formData })
-  }
-}
+import { Link } from "@remix-run/react";
 
 export default function Index() {
-  const actionData = useActionData<ActionData>();
-  const validationErrors = getValidationErrors(actionData?.err);
-
   return (
-    <Layout>
-      <Form method="post">
-        <div className="mb-3">
-          <label htmlFor="phoneNumber" className="form-label">Контактний номер телефону</label>
-          <input type="text" name="phoneNumber" className="form-control" id="phoneNumber" />
-          {validationErrors?.phoneNumber && (
-            <div className="alert alert-danger">
-              {validationErrors?.phoneNumber}
-            </div>
-          )}
+    <div className="px-4 py-5 my-5 text-center">
+      <h1 className="display-5 fw-bold">Отримання допомоги для ВПО</h1>
+      <div className="col-lg-6 mx-auto">
+        <p className="lead mb-4">Для отримання допомоги треба подати заявку. Ви можете перевірити свою заявку якщо ви її вже подавали. Або подати нову.</p>
+        <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <Link to="/check-status">
+            <button type="button" className="btn btn-outline-secondary btn-lg px-4 gap-3">Перевірити статус заявки</button>
+          </Link>
+          <Link to="/register">
+            <button type="button" className="btn btn-primary btn-lg px-4">Подати нову заявку</button>
+          </Link>
         </div>
-        <div className="mb-3">
-          <label htmlFor="vpoLastFour" className="form-label">Останні 4 цифри довідки ВПО</label>
-          <input type="text" name="vpoLastFour" className="form-control" id="vpoLastFour" />
-          {validationErrors?.vpoLastFour && (
-            <div className="alert alert-danger">
-              {validationErrors?.vpoLastFour}
-            </div>
-          )}
-        </div>
-        <button type="submit" className="btn btn-primary">Перевірити заявку</button>
-      </Form>
-    </Layout>
-  );
+      </div>
+    </div>
+  )
 }
