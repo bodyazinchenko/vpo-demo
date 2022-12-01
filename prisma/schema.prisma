@@ -16,6 +16,7 @@ model User {
   updatedAt DateTime @updatedAt
   phone String @unique
   vpoLastFour String
+  vpoImageSrc String
   fullName String
   birthday String
   passportRegistration DocumentsData

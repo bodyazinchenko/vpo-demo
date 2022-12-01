@@ -15,4 +15,5 @@ export type RegisterFormData = {
   vpoApt: string;
   spousesFullName: string;
   personsCount: string;
+  img: string;
 }

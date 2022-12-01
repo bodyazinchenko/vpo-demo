@@ -24,6 +24,7 @@ export const createUser = async (formData: RegisterFormData) => {
       fullName: formData.fullName,
       birthday: formData.birthday,
       vpoLastFour: formData.vpoLastFour,
+      vpoImageSrc: formData.img,
       phone: formData.phone,
       passportRegistration: {
         city: formData.passportCity,
